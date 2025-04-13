@@ -44,7 +44,7 @@ fun DragAndShootComposable(
 
     val magnitudPx = (dragOffset - startDragOffset).getDistance()
 
-    val direccionReal = calcularDireccionLinealEscalada(
+    val direccion = calcularDireccionLinealEscalada(
         inicio = dragOffset,
         fin = startDragOffset,
         maxMagnitudPx = maxDragDistancePx
@@ -52,12 +52,12 @@ fun DragAndShootComposable(
 
     val escala = (magnitudPx / maxDragDistancePx).coerceIn(0f, 1f)
     val pasos = (8 + 12 * escala.pow(1.1f)).toInt().coerceAtMost(25)
-    val direccionVisual = direccionReal * 0.4f // ← escala visual, ajustable
+
 
     val puntos = remember(dragOffset, bolaPosicion) {
         simularTrayectoria(
             origen = bolaPosicion,
-            direccion = direccionVisual,
+            direccion = direccion,
             pasos = pasos,
             pins = pins,
             ballRadius = ballRadius,
@@ -86,7 +86,7 @@ fun DragAndShootComposable(
                         fin = startDragOffset,
                         maxMagnitudPx = maxDragDistancePx
                     )
-                    onDisparo(direccionReal)
+                    onDisparo(direccion)
                     arrastrando = false
                 },
                 onDragCancel = {
