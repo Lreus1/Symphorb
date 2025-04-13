@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.example.symphorb.utils.lanzamiento.calcularDireccionLinealEscalada
 import com.example.symphorb.utils.lanzamiento.drawTrayectoriaDegradadaAvanzada
+import com.example.symphorb.utils.lanzamiento.generarTrayectoriaBezierParabolica
 import com.example.symphorb.utils.lanzamiento.simularTrayectoria
 import kotlin.math.sqrt
 
@@ -57,16 +58,6 @@ fun TrayectoriaLanzamiento(
         fin = bolaPosicion,
         maxMagnitudPx = maxDragDistancePx
     )
-
-    // Trayectoria visual basada en curva de Bézier parabólica
-    val puntosTrayectoria = remember(dragOffset, arrastrando) {
-        if (!arrastrando) return@remember emptyList()
-        generarTrayectoriaBezierParabolica(
-            inicio = bolaPosicion,
-            fin = bolaPosicion + direccion * 400f,
-            alturaControl = -550f
-        )
-    }
 
     // Canvas que captura gestos y dibuja puntos de trayectoria
     Canvas(modifier = Modifier

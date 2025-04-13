@@ -163,8 +163,8 @@ fun PachinkoBoard(navController: NavHostController) {
 
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     drawTrayectoriaDegradadaAvanzada(
-                        trayectoria = puntos,
-                        fuerza = (dragOffset - startDragOffset).getDistance()
+                        puntos = puntos,
+                        magnitudPx = (dragOffset - startDragOffset).getDistance()
                     )
                 }
             }
