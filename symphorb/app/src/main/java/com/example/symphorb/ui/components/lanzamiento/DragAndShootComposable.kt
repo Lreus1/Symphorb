@@ -80,6 +80,11 @@ fun DragAndShootComposable(
                     dragOffset = change.position
                 },
                 onDragEnd = {
+                    val direccion = calcularDireccionLinealEscalada(
+                        inicio = dragOffset,
+                        fin = startDragOffset,
+                        maxMagnitudPx = maxDragDistancePx
+                    )
                     onDisparo(direccion)
                     arrastrando = false
                 },
