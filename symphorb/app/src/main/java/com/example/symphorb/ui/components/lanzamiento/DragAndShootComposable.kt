@@ -37,13 +37,13 @@ fun DragAndShootComposable(
     var arrastrando by remember { mutableStateOf(false) }
     var startDragOffset by remember { mutableStateOf(Offset.Zero) }
     var dragOffset by remember { mutableStateOf(Offset.Zero) }
-
+    val magnitudPx = (dragOffset - startDragOffset).getDistance()
     val direccion = calcularDireccionLinealEscalada(
         inicio = startDragOffset,
         fin = dragOffset,
         maxMagnitudPx = maxDragDistancePx,
     )
-    val magnitudPx = (dragOffset - startDragOffset).getDistance()
+
     val escala = (magnitudPx / maxDragDistancePx).coerceIn(0f, 1f)
     val pasos = (10 + 20 * escala.pow(1.3f)).toInt()
     val puntos = remember(dragOffset, bolaPosicion) {
@@ -80,7 +80,7 @@ fun DragAndShootComposable(
         if (arrastrando) {
             drawTrayectoriaDegradadaAvanzada(
                 puntos = puntos,
-                magnitudPx = (dragOffset - startDragOffset).getDistance()
+                magnitudPx = magnitudPx
             )
         }
     }
