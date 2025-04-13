@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1025967545680",
+    "project_id": "symphorb-910d4",
+    "storage_bucket": "symphorb-910d4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1025967545680:android:30a564ab2035128fe66055",
+        "android_client_info": {
+          "package_name": "com.example.symphorb"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBA5sw0K2WWr6dCdZ662_cJwS6dZTxz-jM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
