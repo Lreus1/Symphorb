@@ -31,8 +31,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.symphorb.physics.PhysicsConstants
 import com.example.symphorb.physics.PhysicsEngine
+import com.example.symphorb.ui.components.lanzamiento.DragAndShootComposable
 import com.example.symphorb.utils.lanzamiento.calcularDireccionLinealEscalada
 import com.example.symphorb.utils.lanzamiento.drawTrayectoriaDegradadaAvanzada
+import com.example.symphorb.utils.lanzamiento.simularTrayectoria
 import kotlinx.coroutines.android.awaitFrame
 
 @Composable
@@ -68,10 +70,10 @@ fun PachinkoBoard(navController: NavHostController) {
     var bolaVelocidad by remember { mutableStateOf(Offset(0f, 0f)) }
     var simularFisica by remember { mutableStateOf(false) }
     var puedeLanzar by remember { mutableStateOf(true) }
-    var arrastrando by remember { mutableStateOf(false) }
-    var dragOffset by remember { mutableStateOf(Offset.Zero) }
+
+
     var mostrarCuadricula by remember { mutableStateOf(true) }
-    var startDragOffset by remember { mutableStateOf(Offset.Zero) }
+
 
     val physicsEngine = remember { PhysicsEngine() }
 
@@ -109,65 +111,17 @@ fun PachinkoBoard(navController: NavHostController) {
                 .fillMaxWidth()
                 .height((19 * 35).dp)
                 .padding(16.dp)
-                .pointerInput(puedeLanzar) {
-                    if (!puedeLanzar) return@pointerInput
-                    detectDragGestures(
-                        onDragStart = { offset ->
-                            arrastrando = true
-                            startDragOffset = offset
-                            dragOffset = offset
-                        },
-                        onDrag = { change, _ ->
-                            dragOffset = change.position
-                        },
-                        onDragEnd = {
-                            val direccion = calcularDireccionLinealEscalada(
-                                inicio = startDragOffset,
-                                fin = dragOffset,
-                                maxMagnitudPx = maxDragDistancePx,
-                            )  //Fuerza del lanzamiento
-                            bolaVelocidad = direccion
-                            simularFisica = true
-                            puedeLanzar = false
-                            arrastrando = false
-                        },
-                        onDragCancel = {
-                            arrastrando = false
-                        }
-                    )
-                }
         ) {
-            if (arrastrando) {
-                val direccion = calcularDireccionLinealEscalada(
-                    inicio = startDragOffset,
-                    fin = dragOffset,
-                    maxMagnitudPx = maxDragDistancePx,
-                )  //Simulacion de la fuerza
-                val puntos = remember(dragOffset, bolaPosicion) {
-
-                    val simulacion = mutableListOf<Offset>()
-                    var pos = bolaPosicion
-                    var vel = direccion
-                    val gravedad = PhysicsConstants.gravedad
-                    val damping = PhysicsConstants.damping
-
-                    repeat(10) {
-                        vel = Offset(vel.x, vel.y + gravedad)
-                        pos += vel
-                        simulacion.add(pos)
-                        vel *= damping
-                    }
-
-                    simulacion
-                }
-
-                Canvas(modifier = Modifier.fillMaxSize()) {
-                    drawTrayectoriaDegradadaAvanzada(
-                        puntos = puntos,
-                        magnitudPx = (dragOffset - startDragOffset).getDistance()
-                    )
-                }
-            }
+            // NUEVO: Sistema de lanzamiento modular
+            DragAndShootComposable(
+                bolaPosicion = bolaPosicion,
+                onDisparo = { direccion ->
+                    bolaVelocidad = direccion
+                    simularFisica = true
+                    puedeLanzar = false
+                },
+                enabled = puedeLanzar
+            )
 
             Canvas(modifier = Modifier.fillMaxSize()) {
                 if (mostrarCuadricula) {
