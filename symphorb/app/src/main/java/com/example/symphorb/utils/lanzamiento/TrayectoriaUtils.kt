@@ -46,7 +46,7 @@ fun DrawScope.drawTrayectoriaDegradadaAvanzada(
 ) {
     if (puntos.size < 2) return
 
-    val maxPx = com.example.symphorb.utils.lanzamiento.LanzamientoConfig.maxMagnitudPx
+    val maxPx = LanzamientoConfig.maxMagnitudPx
     val umbral = 0.8f * maxPx
 
     // t será 0 hasta el 80% de la magnitud, y empieza a crecer de 0 a 1 entre 80% y 100%
@@ -57,53 +57,30 @@ fun DrawScope.drawTrayectoriaDegradadaAvanzada(
     val green = 1f - t
     val color = Color(red, green, 0f, 1f)
 
-    for (i in 0 until puntos.size - 1) {
+    val puntosCurvados = puntos.curvarVisualmente()
+
+    for (i in 0 until puntosCurvados.size - 1) {
         drawLine(
             color = color,
-            start = puntos[i],
-            end = puntos[i + 1],
+            start = puntosCurvados[i],
+            end = puntosCurvados[i + 1],
             strokeWidth = grosor,
             cap = StrokeCap.Round
         )
     }
 }
-
 /**
- * Genera una trayectoria parabólica visual usando una curva de Bézier cuadrática.
- * Ideal para visualización artística o efectos alternativos al modelo físico real.
- *
- * @param inicio Punto inicial del lanzamiento (P0).
- * @param fin Punto final estimado del lanzamiento (P2).
- * @param alturaControl Altura del vértice de la parábola (más negativo = parábola más marcada).
- * @param pasos Número de puntos a generar (resolución de la curva).
+ * Aplica una curvatura visual a una lista de puntos para mostrar una trayectoria más parabólica.
  */
-fun generarTrayectoriaBezierParabolica(
-    inicio: Offset,
-    fin: Offset,
-    alturaControl: Float = -550f,
-    pasos: Int = 30
-): List<Offset> {
-    val puntos = mutableListOf<Offset>()
+fun List<Offset>.curvarVisualmente(): List<Offset> {
+    if (this.size < 2) return this
+    val total = this.size - 1
+    val intensidad = 100f  // Puedes ajustar este valor para más/menos curva
 
-    // Punto de control: vértice de la parábola
-    val control = Offset(
-        x = (inicio.x + fin.x) / 2f,
-        y = (inicio.y + fin.y) / 2f + alturaControl
-    )
-
-    for (i in 0..pasos) {
-        val t = i / pasos.toFloat()
-
-        val x = (1 - t).pow(2) * inicio.x +
-                2 * (1 - t) * t * control.x +
-                t.pow(2) * fin.x
-
-        val y = (1 - t).pow(2) * inicio.y +
-                2 * (1 - t) * t * control.y +
-                t.pow(2) * fin.y
-
-        puntos.add(Offset(x, y))
+    return this.mapIndexed { i, punto ->
+        val t = i.toFloat() / total
+        val deformacion = -intensidad * (4 * t * (1 - t)) // parábola simétrica
+        punto.copy(y = punto.y + deformacion)
     }
-
-    return puntos
 }
+

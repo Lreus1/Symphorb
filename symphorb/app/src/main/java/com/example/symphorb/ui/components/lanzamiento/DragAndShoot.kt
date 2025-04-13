@@ -14,7 +14,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.example.symphorb.utils.lanzamiento.calcularDireccionLinealEscalada
 import com.example.symphorb.utils.lanzamiento.drawTrayectoriaDegradadaAvanzada
-import com.example.symphorb.utils.lanzamiento.generarTrayectoriaBezierParabolica
 import com.example.symphorb.utils.lanzamiento.simularTrayectoria
 import kotlin.math.sqrt
 
@@ -97,5 +96,6 @@ fun TrayectoriaLanzamiento(
 private fun Offset.getDistanceSquared(): Float {
     return this.x * this.x + this.y * this.y
 }
+
 
 
