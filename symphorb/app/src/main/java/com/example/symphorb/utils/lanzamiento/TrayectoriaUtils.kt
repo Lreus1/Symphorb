@@ -41,7 +41,7 @@ fun simularTrayectoria(
         vel = nuevaVel
 
         simulacion.add(pos)
-
+        if ((pos - origen).getDistance() > 800f) return simulacion
         if (physicsEngine.shouldStop(pos, ballRadius, maxY)) {
             return simulacion  // detener si alcanza el final
         }
