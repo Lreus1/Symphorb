@@ -120,7 +120,12 @@ fun PachinkoBoard(navController: NavHostController) {
                     simularFisica = true
                     puedeLanzar = false
                 },
-                enabled = puedeLanzar
+                enabled = puedeLanzar,
+                pins = pines,                    // ← lista real de pines del nivel
+                ballRadius = radioBola,          // ← radio real de la bola
+                minX = x(0.3f),                  // ← borde izquierdo real
+                maxX = x(10.9f),                 // ← borde derecho real
+                maxY = y(18)                     // ← borde inferior real
             )
 
             Canvas(modifier = Modifier.fillMaxSize()) {

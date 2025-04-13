@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import com.example.symphorb.physics.PhysicsConstants
+import com.example.symphorb.physics.PhysicsEngine
 import kotlin.math.pow
 
 /**
@@ -13,19 +14,60 @@ import kotlin.math.pow
 fun simularTrayectoria(
     origen: Offset,
     direccion: Offset,
-    pasos: Int = 30
+    pasos: Int,
+    pins: List<Offset>,
+    ballRadius: Float,
+    minX: Float,
+    maxX: Float,
+    maxY: Float
 ): List<Offset> {
     val simulacion = mutableListOf<Offset>()
     var pos = origen
     var vel = direccion
-    val gravedad = PhysicsConstants.gravedad
-    val damping = PhysicsConstants.damping
+    val physicsEngine = PhysicsEngine()
 
     repeat(pasos) {
-        vel = Offset(vel.x, vel.y + gravedad)
-        pos += vel
+        val (nuevaPos, nuevaVel) = physicsEngine.update(
+            position = pos,
+            velocity = vel,
+            pins = pins,
+            ballRadius = ballRadius,
+            minX = minX,
+            maxX = maxX,
+            maxY = maxY
+        )
+
+        pos = nuevaPos
+        vel = nuevaVel
+
         simulacion.add(pos)
-        vel *= damping
+
+        if (physicsEngine.shouldStop(pos, ballRadius, maxY)) {
+            return simulacion  // detener si alcanza el final
+        }
+    }
+
+    return simulacion
+
+    repeat(pasos) {
+        val (nuevaPos, nuevaVel) = physicsEngine.update(
+            position = pos,
+            velocity = vel,
+            pins = pins,
+            ballRadius = ballRadius,
+            minX = minX,
+            maxX = maxX,
+            maxY = maxY
+        )
+
+        pos = nuevaPos
+        vel = nuevaVel
+
+        simulacion.add(pos)
+
+        if (physicsEngine.shouldStop(pos, ballRadius, maxY)) {
+            return simulacion  // Detener si llega al final
+        }
     }
 
     return simulacion
@@ -57,13 +99,11 @@ fun DrawScope.drawTrayectoriaDegradadaAvanzada(
     val green = 1f - t
     val color = Color(red, green, 0f, 1f)
 
-    val puntosCurvados = puntos.curvarVisualmente()
-
-    for (i in 0 until puntosCurvados.size - 1) {
+    for (i in 0 until puntos.size - 1) {
         drawLine(
             color = color,
-            start = puntosCurvados[i],
-            end = puntosCurvados[i + 1],
+            start = puntos[i],
+            end = puntos[i + 1],
             strokeWidth = grosor,
             cap = StrokeCap.Round
         )

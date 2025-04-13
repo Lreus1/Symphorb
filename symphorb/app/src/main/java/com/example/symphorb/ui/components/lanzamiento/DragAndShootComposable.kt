@@ -29,28 +29,40 @@ import kotlin.math.pow
 fun DragAndShootComposable(
     bolaPosicion: Offset,
     onDisparo: (Offset) -> Unit,
-    enabled: Boolean
+    enabled: Boolean,
+    pins: List<Offset>,
+    ballRadius: Float,
+    minX: Float,
+    maxX: Float,
+    maxY: Float
 ) {
-    val maxDragDistancePx = with(LocalDensity.current) { 45.dp.toPx() }
-
+    val maxDragDistancePx = with(LocalDensity.current) { 100.dp.toPx() }
 
     var arrastrando by remember { mutableStateOf(false) }
     var startDragOffset by remember { mutableStateOf(Offset.Zero) }
     var dragOffset by remember { mutableStateOf(Offset.Zero) }
+
     val magnitudPx = (dragOffset - startDragOffset).getDistance()
+
     val direccion = calcularDireccionLinealEscalada(
-        inicio = startDragOffset,
-        fin = dragOffset,
-        maxMagnitudPx = maxDragDistancePx,
+        inicio = dragOffset,
+        fin = startDragOffset,
+        maxMagnitudPx = maxDragDistancePx
     )
 
     val escala = (magnitudPx / maxDragDistancePx).coerceIn(0f, 1f)
     val pasos = (10 + 20 * escala.pow(1.3f)).toInt()
+
     val puntos = remember(dragOffset, bolaPosicion) {
         simularTrayectoria(
             origen = bolaPosicion,
             direccion = direccion,
-            pasos = pasos
+            pasos = pasos,
+            pins = pins,
+            ballRadius = ballRadius,
+            minX = minX,
+            maxX = maxX,
+            maxY = maxY
         )
     }
 
