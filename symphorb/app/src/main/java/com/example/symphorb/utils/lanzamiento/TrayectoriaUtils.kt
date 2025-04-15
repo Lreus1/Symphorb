@@ -19,12 +19,20 @@ fun simularTrayectoria(
     ballRadius: Float,
     minX: Float,
     maxX: Float,
-    maxY: Float
+    maxY: Float,
+    techoY: Float
 ): List<Offset> {
     val simulacion = mutableListOf<Offset>()
+    simulacion.add(origen)
+
     var pos = origen
     var vel = direccion
     val physicsEngine = PhysicsEngine()
+    val radioPin = 15f
+
+    var rebotes = 0
+    val rebotesMaximos = 1
+    var yaRebotoEnTecho = false
 
     repeat(pasos) {
         val (nuevaPos, nuevaVel) = physicsEngine.update(
@@ -37,40 +45,61 @@ fun simularTrayectoria(
             maxY = maxY
         )
 
-        pos = nuevaPos
-        vel = nuevaVel
-
-        simulacion.add(pos)
-        if (physicsEngine.shouldStop(pos, ballRadius, maxY)) {
-            return simulacion  // detener si alcanza el final
+        val cambioVelocidadY = nuevaVel.y - vel.y
+        val reboteEnTecho = vel.y < 0f && cambioVelocidadY > 2f && pos.y < techoY
+        if (reboteEnTecho) {
+            simulacion.add(nuevaPos)
+            pos = nuevaPos
+            vel = nuevaVel
+            yaRebotoEnTecho = true
+            return@repeat
         }
-    }
 
-    return simulacion
+        if (yaRebotoEnTecho) {
+            simulacion.add(nuevaPos)
+            pos = nuevaPos
+            vel = nuevaVel
+            return@repeat
+        }
 
-    repeat(pasos) {
-        val (nuevaPos, nuevaVel) = physicsEngine.update(
-            position = pos,
-            velocity = vel,
-            pins = pins,
-            ballRadius = ballRadius,
-            minX = minX,
-            maxX = maxX,
-            maxY = maxY
-        )
+        val cambioBrusco = (vel - nuevaVel).getDistance() > 8f
+
+        if (cambioBrusco) {
+            if (++rebotes > rebotesMaximos) return simulacion
+
+            val pinCercano = pins.minByOrNull { (pos - it).getDistance() }
+            if (pinCercano != null) {
+                val dirColision = (pos - pinCercano)
+                val distancia = dirColision.getDistance()
+                if (distancia > 0.001f) {
+                    val normal = dirColision / distancia
+                    val puntoDeContacto = pinCercano + normal * (ballRadius + radioPin) * 0.7f
+                    if (simulacion.isNotEmpty()) {
+                        simulacion[simulacion.size - 1] = puntoDeContacto
+                    } else {
+                        simulacion.add(puntoDeContacto)
+                    }
+                } else {
+                    simulacion.add(pos)
+                }
+            } else {
+                simulacion.add(pos)
+            }
+        } else {
+            simulacion.add(nuevaPos)
+        }
 
         pos = nuevaPos
         vel = nuevaVel
 
-        simulacion.add(pos)
-
         if (physicsEngine.shouldStop(pos, ballRadius, maxY)) {
-            return simulacion  // Detener si llega al final
+            return simulacion
         }
     }
 
     return simulacion
 }
+
 
 /**
  * Dibuja la trayectoria con un color verde si la magnitud del arrastre es baja

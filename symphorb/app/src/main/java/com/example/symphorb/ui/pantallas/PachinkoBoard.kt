@@ -70,11 +70,7 @@ fun PachinkoBoard(navController: NavHostController) {
     var bolaVelocidad by remember { mutableStateOf(Offset(0f, 0f)) }
     var simularFisica by remember { mutableStateOf(false) }
     var puedeLanzar by remember { mutableStateOf(true) }
-
-
-    var mostrarCuadricula by remember { mutableStateOf(true) }
-
-
+    var mostrarCuadricula by remember { mutableStateOf(false) }
     val physicsEngine = remember { PhysicsEngine() }
 
     LaunchedEffect(simularFisica) {
@@ -174,7 +170,7 @@ fun PachinkoBoard(navController: NavHostController) {
                 }
 
                 pines.forEach { pin ->
-                    drawCircle(color = Color.Gray, radius = 8f, center = pin)
+                    drawCircle(color = Color.Gray, radius = 15f, center = pin) //cambiar el radio tambien en Physics Engine para que la fisica afecte al radio.
                 }
 
                 drawCircle(color = Color.Red, radius = radioBola, center = bolaPosicion)

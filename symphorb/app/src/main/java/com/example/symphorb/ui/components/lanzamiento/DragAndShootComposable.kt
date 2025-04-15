@@ -2,6 +2,7 @@ package com.example.symphorb.ui.components.lanzamiento
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -36,69 +37,77 @@ fun DragAndShootComposable(
     maxX: Float,
     maxY: Float
 ) {
-    val maxDragDistancePx = with(LocalDensity.current) { 60.dp.toPx() }
+    BoxWithConstraints(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        val screenHeightPx = with(LocalDensity.current) { this@BoxWithConstraints.maxHeight.toPx() }
+        val maxDragDistancePx = with(LocalDensity.current) { 60.dp.toPx() }
 
-    var arrastrando by remember { mutableStateOf(false) }
-    var startDragOffset by remember { mutableStateOf(Offset.Zero) }
-    var dragOffset by remember { mutableStateOf(Offset.Zero) }
+        var arrastrando by remember { mutableStateOf(false) }
+        var startDragOffset by remember { mutableStateOf(Offset.Zero) }
+        var dragOffset by remember { mutableStateOf(Offset.Zero) }
 
-    val magnitudPx = (dragOffset - startDragOffset).getDistance()
+        val magnitudPx = (dragOffset - startDragOffset).getDistance()
 
-    val direccion = calcularDireccionLinealEscalada(
-        inicio = dragOffset,
-        fin = startDragOffset,
-        maxMagnitudPx = maxDragDistancePx
-    )
-
-    val escala = (magnitudPx / maxDragDistancePx).coerceIn(0f, 1f)
-    val pasos = (8 + 12 * escala.pow(1.1f)).toInt().coerceAtMost(10)
-
-    val puntos = remember(dragOffset, bolaPosicion) {
-        simularTrayectoria(
-            origen = bolaPosicion,
-            direccion = direccion,
-            pasos = pasos,
-            pins = pins,
-            ballRadius = ballRadius,
-            minX = minX,
-            maxX = maxX,
-            maxY = maxY
+        val direccion = calcularDireccionLinealEscalada(
+            inicio = dragOffset,
+            fin = startDragOffset,
+            maxMagnitudPx = maxDragDistancePx
         )
-    }
 
-    Canvas(modifier = Modifier
-        .fillMaxSize()
-        .pointerInput(enabled) {
-            if (!enabled) return@pointerInput
-            detectDragGestures(
-                onDragStart = { offset ->
-                    arrastrando = true
-                    startDragOffset = offset
-                    dragOffset = offset
-                },
-                onDrag = { change, _ ->
-                    dragOffset = change.position
-                },
-                onDragEnd = {
-                    val direccion = calcularDireccionLinealEscalada(
-                        inicio = dragOffset,
-                        fin = startDragOffset,
-                        maxMagnitudPx = maxDragDistancePx
-                    )
-                    onDisparo(direccion)
-                    arrastrando = false
-                },
-                onDragCancel = {
-                    arrastrando = false
-                }
+        val escala = (magnitudPx / maxDragDistancePx).coerceIn(0f, 1f)
+        val pasos = (20 + 30 * escala.pow(1.1f)).toInt().coerceAtMost(10)
+        val alturaFila = screenHeightPx / 10f
+        val techoY = alturaFila * 2f
+
+        val puntos = remember(dragOffset, bolaPosicion) {
+            simularTrayectoria(
+                origen = bolaPosicion,
+                direccion = direccion,
+                pasos = pasos,
+                pins = pins,
+                ballRadius = ballRadius,
+                minX = minX,
+                maxX = maxX,
+                maxY = maxY,
+                techoY = techoY // ← ¡nuevo parámetro aquí!
             )
         }
-    ) {
-        if (arrastrando) {
-            drawTrayectoriaDegradadaAvanzada(
-                puntos = puntos,
-                magnitudPx = magnitudPx
-            )
+
+        Canvas(modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(enabled) {
+                if (!enabled) return@pointerInput
+                detectDragGestures(
+                    onDragStart = { offset ->
+                        arrastrando = true
+                        startDragOffset = offset
+                        dragOffset = offset
+                    },
+                    onDrag = { change, _ ->
+                        dragOffset = change.position
+                    },
+                    onDragEnd = {
+                        val direccion = calcularDireccionLinealEscalada(
+                            inicio = dragOffset,
+                            fin = startDragOffset,
+                            maxMagnitudPx = maxDragDistancePx
+                        )
+                        onDisparo(direccion)
+                        arrastrando = false
+                    },
+                    onDragCancel = {
+                        arrastrando = false
+                    }
+                )
+            }
+        ) {
+            if (arrastrando) {
+                drawTrayectoriaDegradadaAvanzada(
+                    puntos = puntos,
+                    magnitudPx = magnitudPx
+                )
+            }
         }
     }
 }
