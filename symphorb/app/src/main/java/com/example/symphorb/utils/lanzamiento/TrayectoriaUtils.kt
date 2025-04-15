@@ -41,7 +41,6 @@ fun simularTrayectoria(
         vel = nuevaVel
 
         simulacion.add(pos)
-        if ((pos - origen).getDistance() > 800f) return simulacion
         if (physicsEngine.shouldStop(pos, ballRadius, maxY)) {
             return simulacion  // detener si alcanza el final
         }
@@ -107,20 +106,6 @@ fun DrawScope.drawTrayectoriaDegradadaAvanzada(
             strokeWidth = grosor,
             cap = StrokeCap.Round
         )
-    }
-}
-/**
- * Aplica una curvatura visual a una lista de puntos para mostrar una trayectoria más parabólica.
- */
-fun List<Offset>.curvarVisualmente(): List<Offset> {
-    if (this.size < 2) return this
-    val total = this.size - 1
-    val intensidad = 100f  // Puedes ajustar este valor para más/menos curva
-
-    return this.mapIndexed { i, punto ->
-        val t = i.toFloat() / total
-        val deformacion = -intensidad * (4 * t * (1 - t)) // parábola simétrica
-        punto.copy(y = punto.y + deformacion)
     }
 }
 

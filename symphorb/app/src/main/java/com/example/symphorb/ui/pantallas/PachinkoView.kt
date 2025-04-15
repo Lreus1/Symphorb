@@ -15,22 +15,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.symphorb.model.Resultado
 import com.example.symphorb.viewmodel.RecordViewModel
-import com.example.symphorb.utils.SimuladorPachinko
 import com.example.symphorb.uis.PuntuacionMaxView
-import com.example.symphorb.BolaAnimadaAvanzada
-import com.example.symphorb.view.JuegoViewModel
 import com.example.symphorb.viewmodel.RecordViewModelFactory
 
 @Composable
-fun PachinkoView(navController: NavHostController, viewModel: JuegoViewModel = viewModel()) {
-    val resultado by viewModel.resultadoActual.collectAsStateWithLifecycle()
-    val puntuacion by viewModel.puntuacionTotal.collectAsStateWithLifecycle()
-
+fun PachinkoView(navController: NavHostController) {
     val context = LocalContext.current
     val recordViewModel: RecordViewModel = viewModel(factory = RecordViewModelFactory(context))
-    val record by recordViewModel.record.collectAsState(initial = 0)
-
-    var mostrarResultado by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -62,8 +53,6 @@ fun PachinkoView(navController: NavHostController, viewModel: JuegoViewModel = v
                 Text("🏠 Inicio")
             }
         }
-
-        PuntuacionView(puntuacion = puntuacion)
         PuntuacionMaxView(recordViewModel = recordViewModel)
     }
 }
@@ -74,26 +63,5 @@ fun TituloView() {
         text = "\uD83C\uDFB0 Pachinko Game",
         style = MaterialTheme.typography.headlineMedium
     )
-}
-
-@Composable
-fun ResultadoView(resultado: Resultado?, mostrar: Boolean) {
-    if (mostrar && resultado != null) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("Resultado: ${resultado.nombre}", style = MaterialTheme.typography.bodyLarge)
-            Text("Ganaste: ${resultado.puntos} puntos", style = MaterialTheme.typography.bodyLarge)
-        }
-    } else {
-        Text(
-            text = "Pulsa el botón para lanzar una bola",
-            style = MaterialTheme.typography.bodyLarge,
-            color = Color.Gray
-        )
-    }
-}
-
-@Composable
-fun PuntuacionView(puntuacion: Int) {
-    Text("Puntuación total: $puntuacion", style = MaterialTheme.typography.titleMedium)
 }
 

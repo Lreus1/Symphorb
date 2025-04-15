@@ -36,7 +36,7 @@ fun DragAndShootComposable(
     maxX: Float,
     maxY: Float
 ) {
-    val maxDragDistancePx = with(LocalDensity.current) { 100.dp.toPx() }
+    val maxDragDistancePx = with(LocalDensity.current) { 60.dp.toPx() }
 
     var arrastrando by remember { mutableStateOf(false) }
     var startDragOffset by remember { mutableStateOf(Offset.Zero) }
@@ -51,7 +51,7 @@ fun DragAndShootComposable(
     )
 
     val escala = (magnitudPx / maxDragDistancePx).coerceIn(0f, 1f)
-    val pasos = (10 + 15 * escala.pow(1.2f)).toInt().coerceAtMost(30)
+    val pasos = (8 + 12 * escala.pow(1.1f)).toInt().coerceAtMost(10)
 
     val puntos = remember(dragOffset, bolaPosicion) {
         simularTrayectoria(
