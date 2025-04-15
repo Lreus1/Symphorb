@@ -64,7 +64,7 @@ fun PachinkoBoard(navController: NavHostController) {
     }
 
     val primerPin = pines.first()
-    val maxDragDistancePx = with(LocalDensity.current) { 45.dp.toPx() }
+    with(LocalDensity.current) { 45.dp.toPx() }
 
     var bolaPosicion by remember { mutableStateOf(Offset(primerPin.x, primerPin.y - cellSize)) }
     var bolaVelocidad by remember { mutableStateOf(Offset(0f, 0f)) }
