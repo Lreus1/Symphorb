@@ -10,6 +10,33 @@ recolectando monedas, activando habilidades y venciendo enemigos.
 
 Actualmente se encuentra en desarrollo activo.
 
+## ✅ Versión estable - Abril 2025
+
+### 🎯 Sistema de lanzamiento visual completado
+
+Se ha finalizado la implementación del sistema de simulación de trayectoria para el lanzamiento de la bola. Este sistema incluye:
+
+- 🔴 Visualización de trayectoria antes del lanzamiento
+- 🔁 Simulación realista de rebotes contra pines
+- ⬆️ Rebote preciso contra el techo, sin errores visuales
+- 🔧 Sistema sincronizado con el motor físico (PhysicsEngine.kt)
+- 📐 Curvatura dinámica ajustada a la fuerza del arrastre
+- 🧠 Algoritmo de predicción de colisiones adaptativo
+
+### 🧪 Estado actual:
+> La trayectoria visual se comporta de forma idéntica a la física real, respetando límites del tablero y reglas del entorno.
+
+---
+
+### 🔄 Próximos pasos:
+- Sistema de partículas para rebotes
+- Iluminación de pines al colisionar
+- Refactor visual de pines (sprites y animaciones)
+- Ajuste de precisión para trayectorias con múltiples rebotes
+
+> Este commit marca un hito clave en la evolución del proyecto Symphorb. Sistema de físicas y simulación visual oficial aprobado.
+
+
 **Fases completadas:**
 
 - ✅ FASE 1: Sistema base de lanzamiento y puntuación
