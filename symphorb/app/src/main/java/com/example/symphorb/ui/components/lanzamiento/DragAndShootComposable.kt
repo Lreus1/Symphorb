@@ -51,8 +51,7 @@ fun DragAndShootComposable(
     )
 
     val escala = (magnitudPx / maxDragDistancePx).coerceIn(0f, 1f)
-    val pasos = (8 + 12 * escala.pow(1.1f)).toInt().coerceAtMost(25)
-
+    val pasos = (8 + 12 * escala.pow(1.1f)).toInt().coerceAtMost(10)
 
     val puntos = remember(dragOffset, bolaPosicion) {
         simularTrayectoria(
