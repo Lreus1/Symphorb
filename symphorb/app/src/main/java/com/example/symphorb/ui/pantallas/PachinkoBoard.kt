@@ -87,13 +87,13 @@ fun PachinkoBoard(navController: NavHostController) {
                 ballRadius = radioBola,
                 minX = x(0.4f),
                 maxX = x(10.7f),
-                maxY = y(18)
+                maxY = y(19)
             )
 
             bolaPosicion = nuevaPos
             bolaVelocidad = nuevaVel
 
-            if (physicsEngine.shouldStop(bolaPosicion, radioBola, y(18))) {
+            if (physicsEngine.shouldStop(bolaPosicion, radioBola, y(19))) {
                 simularFisica = false
             }
         }
@@ -116,7 +116,7 @@ fun PachinkoBoard(navController: NavHostController) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height((19 * 35).dp)
+                    .height((19 * 50).dp)
                     .padding(12.dp)
             ) {
                 // NUEVO: Sistema de lanzamiento modular
