@@ -13,15 +13,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.symphorb.model.Resultado
-import com.example.symphorb.viewmodel.RecordViewModel
-import com.example.symphorb.uis.PuntuacionMaxView
-import com.example.symphorb.viewmodel.RecordViewModelFactory
+
 
 @Composable
 fun PachinkoView(navController: NavHostController) {
-    val context = LocalContext.current
-    val recordViewModel: RecordViewModel = viewModel(factory = RecordViewModelFactory(context))
 
     Column(
         modifier = Modifier
@@ -38,11 +33,11 @@ fun PachinkoView(navController: NavHostController) {
         ) {
             Button(
                 onClick = {
-                    // Solo navegamos a la pantalla de PachinkoBoard, sin pasar parámetros
-                    navController.navigate("pachinkoBoard")
+                    // Solo navegamos a la pantalla de seleccion de niveles
+                    navController.navigate("seleccion_niveles")
                 }
             ) {
-                Text("🎯 Nueva bola")
+                Text("Niveles")
             }
 
             Button(
@@ -53,7 +48,6 @@ fun PachinkoView(navController: NavHostController) {
                 Text("🏠 Inicio")
             }
         }
-        PuntuacionMaxView(recordViewModel = recordViewModel)
     }
 }
 

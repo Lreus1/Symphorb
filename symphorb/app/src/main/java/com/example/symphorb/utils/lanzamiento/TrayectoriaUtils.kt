@@ -14,6 +14,15 @@ import kotlin.math.pow
  * Simula una trayectoria balística discreta desde un punto de origen y una dirección inicial.
  */
 @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
+// Verifica si hay colisión real con algún pin
+fun detectarColisionConPin(pos: Offset, pins: List<Offset>, ballRadius: Float, radioPin: Float): Offset? {
+    return pins.firstOrNull {
+        val distancia = (pos - it).getDistance()
+        distancia < (ballRadius + radioPin)
+    }
+}
+
+
 fun simularTrayectoria(
     origen: Offset,
     direccion: Offset,
@@ -46,33 +55,21 @@ fun simularTrayectoria(
             maxX = maxX,
             maxY = maxY
         )
-
-        val cambioVelocidadY = nuevaVel.y - vel.y
-        val reboteEnTecho = vel.y < 0f && cambioVelocidadY > 2f && pos.y < techoY
-        if (reboteEnTecho) {
-            simulacion.add(nuevaPos)
-            pos = nuevaPos
-            vel = nuevaVel
-            return@repeat
-        }
-
         val cambioBrusco = (vel - nuevaVel).getDistance() > 8f
 
         if (cambioBrusco) {
             if (++rebotes > rebotesMaximos) return simulacion
 
-            val pinCercano = pins
-                .minByOrNull { (pos - it).getDistance() }
+            val pinColisionado = detectarColisionConPin(nuevaPos, pins, ballRadius, radioPin)
 
-            if (pinCercano != null) {
-                val vectorColision = nuevaPos - pinCercano
+            if (pinColisionado != null) {
+                val vectorColision = nuevaPos - pinColisionado
                 val distanciaActual = vectorColision.getDistance()
                 val radioTotal = ballRadius + radioPin
 
-// Si la distancia es muy pequeña, añadimos directamente el punto ajustado
                 if (distanciaActual > 0.001f) {
                     val normal = vectorColision / distanciaActual
-                    val puntoRebote = pinCercano + (normal * radioTotal) * 0.65f
+                    val puntoRebote = pinColisionado + (normal * radioTotal) * 0.65f
 
                     if (simulacion.isNotEmpty()) {
                         simulacion.removeLast()
@@ -80,27 +77,17 @@ fun simularTrayectoria(
 
                     simulacion.add(puntoRebote)
 
-                    // Punto intermedio para suavizar la transición
                     val puntoIntermedio = Offset(
                         (puntoRebote.x + nuevaPos.x) / 2f,
                         (puntoRebote.y + nuevaPos.y) / 2f
                     )
                     simulacion.add(puntoIntermedio)
-
-                    simulacion.add(nuevaPos)
-
-                    pos = nuevaPos
-                    vel = nuevaVel
-                    return@repeat
                 }
-
-                else {
-                    simulacion.add(pos)
-                }
-            } else {
-                simulacion.add(pos)
             }
+
+            simulacion.add(nuevaPos)
         } else {
+            // 🔹 Si no hubo cambio brusco, seguimos la trayectoria normal
             simulacion.add(nuevaPos)
         }
 

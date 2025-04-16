@@ -8,6 +8,7 @@ import com.example.symphorb.ui.pantallas.PantallaInicio
 import com.example.symphorb.ui.pantallas.PachinkoView
 import com.example.symphorb.ui.pantallas.HistorialView
 import com.example.symphorb.ui.pantallas.PachinkoBoard
+import com.example.symphorb.ui.pantallas.SeleccionNiveles
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -20,6 +21,12 @@ fun NavGraph(navController: NavHostController) {
         }
         composable("pachinkoBoard") {
             PachinkoBoard(navController = navController) // Pasamos navController aquí
+        }
+        composable("seleccion_niveles") {
+            SeleccionNiveles(navController)
+        }
+        composable("nivel1") {
+            PachinkoView(navController) // o como tengas llamada la vista principal
         }
     }
 }
