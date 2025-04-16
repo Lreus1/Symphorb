@@ -6,7 +6,8 @@ import kotlin.math.sqrt
 class PhysicsEngine(
     private val gravity: Float = PhysicsConstants.gravedad,
     private val damping: Float = PhysicsConstants.damping,
-    private val substeps: Int = 6 // número de pasos internos por frame
+    private val substeps: Int = 6, // número de pasos internos por frame
+    private val techoActivo: Boolean = true
 ) {
 
     fun update(
@@ -26,10 +27,12 @@ class PhysicsEngine(
             newPosition += newVelocity * (1f / substeps)
 
             // Techo físico
-            val limiteSuperiorY = 440f
-            if (newPosition.y - ballRadius < limiteSuperiorY) {
-                newPosition = newPosition.copy(y = limiteSuperiorY + ballRadius)
-                newVelocity = newVelocity.copy(y = 0f)
+            if (techoActivo) {
+                val limiteSuperiorY = 10f
+                if (newPosition.y - ballRadius < limiteSuperiorY) {
+                    newPosition = newPosition.copy(y = limiteSuperiorY + ballRadius)
+                    newVelocity = newVelocity.copy(y = -newVelocity.y * damping)
+                }
             }
 
             // Colisión con paredes laterales

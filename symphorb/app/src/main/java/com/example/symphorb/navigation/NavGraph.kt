@@ -6,9 +6,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.symphorb.ui.pantallas.PantallaInicio
 import com.example.symphorb.ui.pantallas.PachinkoView
-import com.example.symphorb.ui.pantallas.HistorialView
 import com.example.symphorb.ui.pantallas.PachinkoBoard
 import com.example.symphorb.ui.pantallas.SeleccionNiveles
+import com.example.symphorb.ui.pantallas.niveles.Nivel2board
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -27,6 +27,9 @@ fun NavGraph(navController: NavHostController) {
         }
         composable("nivel1") {
             PachinkoView(navController) // o como tengas llamada la vista principal
+        }
+        composable("nivel2") {
+            Nivel2board(navController)
         }
     }
 }

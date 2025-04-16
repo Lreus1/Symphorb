@@ -20,14 +20,22 @@ fun SeleccionNiveles(navController: NavController) {
     ) {
         Text("Selecciona un nivel", style = MaterialTheme.typography.headlineMedium)
 
+        //Boton Nivel 1
         Button(onClick = {
             navController.navigate("pachinkoBoard")
         }) {
             Text("Nivel 1")
         }
 
-        Box(modifier = Modifier.weight(1f)) {} // 🔧 Esto empuja hacia abajo el botón
+        //Boton Nivel 2
+        Button(onClick = {
+            navController.navigate("nivel2")
+        }) {
+            Text("Nivel 2")
+        }
 
+        //Boton Volver
+        Box(modifier = Modifier.weight(1f)) {} // 🔧 Esto empuja hacia abajo el botón
         Button(
             onClick = {
                 navController.popBackStack()
@@ -35,6 +43,7 @@ fun SeleccionNiveles(navController: NavController) {
         ) {
             Text("Volver")
         }
+
     }
 }
 
