@@ -26,7 +26,7 @@ class PhysicsEngine(
             newPosition += newVelocity * (1f / substeps)
 
             // Techo físico
-            val limiteSuperiorY = 100f
+            val limiteSuperiorY = 440f
             if (newPosition.y - ballRadius < limiteSuperiorY) {
                 newPosition = newPosition.copy(y = limiteSuperiorY + ballRadius)
                 newVelocity = newVelocity.copy(y = 0f)
