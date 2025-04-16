@@ -1,17 +1,18 @@
 package com.example.symphorb.ui.pantallas
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,17 +26,18 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.symphorb.physics.PhysicsConstants
 import com.example.symphorb.physics.PhysicsEngine
 import com.example.symphorb.ui.components.lanzamiento.DragAndShootComposable
-import com.example.symphorb.utils.lanzamiento.calcularDireccionLinealEscalada
-import com.example.symphorb.utils.lanzamiento.drawTrayectoriaDegradadaAvanzada
-import com.example.symphorb.utils.lanzamiento.simularTrayectoria
 import kotlinx.coroutines.android.awaitFrame
+import com.example.symphorb.R
 
 @Composable
 fun PachinkoBoard(navController: NavHostController) {
@@ -44,15 +46,16 @@ fun PachinkoBoard(navController: NavHostController) {
 
     fun x(col: Float) = (col - 1) * cellSize + cellSize / 2
     fun y(row: Int) = (row - 1) * cellSize + cellSize / 2
+    fun y(row: Float): Float = (row - 1) * cellSize + cellSize / 2
 
 
     val pines = remember {
         buildList {
             for (filaIndex in 0 until 10) {
-                val fila = filaIndex + 4
+                val fila = filaIndex + 7.06f //Inicio de la posicion de los pines
                 val numPines = filaIndex + 1
                 val espacio = 1f
-                val centro = 5.5f
+                val centro = 5.6f
                 val offsetInicial = -((numPines - 1) / 2f)
 
                 for (i in 0 until numPines) {
@@ -82,8 +85,8 @@ fun PachinkoBoard(navController: NavHostController) {
                 velocity = bolaVelocidad,
                 pins = pines,
                 ballRadius = radioBola,
-                minX = x(0.3f),
-                maxX = x(10.9f),
+                minX = x(0.4f),
+                maxX = x(10.7f),
                 maxY = y(18)
             )
 
@@ -95,111 +98,204 @@ fun PachinkoBoard(navController: NavHostController) {
             }
         }
     }
+    Box(modifier = Modifier.fillMaxSize()) {
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height((19 * 35).dp)
-                .padding(16.dp)
+        // 🎨 Fondo de mosaico árabe - suave y elegante
+        Image(
+            painter = painterResource(id = R.drawable.alhambra_2),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            alpha = 0.2f, // suaviza el patrón para no distraer
+            modifier = Modifier.fillMaxSize()
+        )
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            // NUEVO: Sistema de lanzamiento modular
-            DragAndShootComposable(
-                bolaPosicion = bolaPosicion,
-                onDisparo = { direccion ->
-                    bolaVelocidad = direccion
-                    simularFisica = true
-                    puedeLanzar = false
-                },
-                enabled = puedeLanzar,
-                pins = pines,                    // ← lista real de pines del nivel
-                ballRadius = radioBola,          // ← radio real de la bola
-                minX = x(0.3f),                  // ← borde izquierdo real
-                maxX = x(10.9f),                 // ← borde derecho real
-                maxY = y(18)                     // ← borde inferior real
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height((19 * 35).dp)
+                    .padding(12.dp)
+            ) {
+                // NUEVO: Sistema de lanzamiento modular
+                DragAndShootComposable(
+                    bolaPosicion = bolaPosicion,
+                    onDisparo = { direccion ->
+                        bolaVelocidad = direccion
+                        simularFisica = true
+                        puedeLanzar = false
+                    },
+                    enabled = puedeLanzar,
+                    pins = pines,                    // ← lista real de pines del nivel
+                    ballRadius = radioBola,          // ← radio real de la bola
+                    minX = x(0.5f),                  // ← borde izquierdo real
+                    maxX = x(10.5f),                 // ← borde derecho real
+                    maxY = y(18)                     // ← borde inferior real
+                )
 
-            Canvas(modifier = Modifier.fillMaxSize()) {
-                if (mostrarCuadricula) {
-                    val columnas = 11
-                    val filas = 20
-                    val gridColor = Color.LightGray.copy(alpha = 0.5f)
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    if (mostrarCuadricula) {
+                        val columnas = 11
+                        val filas = 20
+                        val gridColor = Color.LightGray.copy(alpha = 0.5f)
 
-                    for (col in 1..columnas) {
-                        val xPos = x(col.toFloat())
-                        drawLine(
-                            color = gridColor,
-                            start = Offset(xPos, 0f),
-                            end = Offset(xPos, size.height),
-                            strokeWidth = 1f
-                        )
-                    }
-
-                    for (row in 1..filas) {
-                        val yPos = y(row)
-                        drawLine(
-                            color = gridColor,
-                            start = Offset(0f, yPos),
-                            end = Offset(size.width, yPos),
-                            strokeWidth = 1f
-                        )
-                    }
-
-                    for (col in 1..columnas) {
-                        for (row in 1..filas) {
+                        for (col in 1..columnas) {
                             val xPos = x(col.toFloat())
+                            drawLine(
+                                color = gridColor,
+                                start = Offset(xPos, 0f),
+                                end = Offset(xPos, size.height),
+                                strokeWidth = 1f
+                            )
+                        }
+
+                        for (row in 1..filas) {
                             val yPos = y(row)
-                            drawIntoCanvas { canvas ->
-                                canvas.nativeCanvas.drawText(
-                                    "($col,$row)",
-                                    xPos + 5f,
-                                    yPos + 15f,
-                                    android.graphics.Paint().apply {
-                                        color = android.graphics.Color.GRAY
-                                        textSize = 12f
-                                    }
-                                )
+                            drawLine(
+                                color = gridColor,
+                                start = Offset(0f, yPos),
+                                end = Offset(size.width, yPos),
+                                strokeWidth = 1f
+                            )
+                        }
+
+                        for (col in 1..columnas) {
+                            for (row in 1..filas) {
+                                val xPos = x(col.toFloat())
+                                val yPos = y(row)
+                                drawIntoCanvas { canvas ->
+                                    canvas.nativeCanvas.drawText(
+                                        "($col,$row)",
+                                        xPos + 5f,
+                                        yPos + 15f,
+                                        android.graphics.Paint().apply {
+                                            color = android.graphics.Color.GRAY
+                                            textSize = 12f
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
-                }
 
-                pines.forEach { pin ->
-                    drawCircle(color = Color.Gray, radius = 15f, center = pin) //cambiar el radio tambien en Physics Engine para que la fisica afecte al radio.
-                }
+                    //Dibujar los límites del techo y las paredes
+                    val bordeIzquierdo = x(0.4f)
+                    val bordeDerecho = x(10.7f)
+                    val techoVisualY = y(4.85f)
 
-                drawCircle(color = Color.Red, radius = radioBola, center = bolaPosicion)
+
+                    drawLine(
+                        color = Color.DarkGray,
+                        start = Offset(bordeIzquierdo, techoVisualY),
+                        end = Offset(bordeDerecho, techoVisualY),
+                        strokeWidth = 18f
+                    )
+
+                    drawLine(
+                        color = Color.DarkGray,
+                        start = Offset(bordeIzquierdo, 0f),
+                        end = Offset(bordeIzquierdo, size.height),
+                        strokeWidth = 12f
+                    )
+
+                    drawLine(
+                        color = Color.DarkGray,
+                        start = Offset(bordeDerecho, 0f),
+                        end = Offset(bordeDerecho, size.height),
+                        strokeWidth = 12f
+                    )
+
+                    pines.forEach { pin ->
+                        drawCircle(
+                            color = Color.Gray,
+                            radius = 15f,
+                            center = pin
+                        ) //cambiar el radio tambien en Physics Engine para que la fisica afecte al radio.
+                    }
+
+                    drawCircle(color = Color.Red, radius = radioBola, center = bolaPosicion)
+                }
             }
         }
+        Box(modifier = Modifier.fillMaxSize()) {
+            val density = LocalDensity.current
+            val botonAnchoDp = with(density) { cellSize.toDp() }
+            val botonAltoDp = with(density) { (cellSize).toDp() }
 
-        Button(onClick = { mostrarCuadricula = !mostrarCuadricula }) {
-            Text(if (mostrarCuadricula) "Ocultar cuadrícula" else "Mostrar cuadrícula")
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-        Button(onClick = {
-            bolaPosicion = Offset(primerPin.x, primerPin.y - cellSize)
-            bolaVelocidad = Offset(0f, 0f)
-            simularFisica = false
-            puedeLanzar = true
-        }) {
-            Text("🔄 Reposicionar bola", style = MaterialTheme.typography.bodyLarge)
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-        Button(onClick = {
-            navController.navigate("pachinko") {
-                popUpTo("pachinko") { inclusive = true }
+            Button(
+                onClick = { mostrarCuadricula = !mostrarCuadricula },
+                modifier = Modifier
+                    .offset { IntOffset(x = x(1f).toInt(), y = y(20f).toInt()) }
+                    .size(width = botonAnchoDp, height = 36.dp),
+                contentPadding = PaddingValues(0.dp) // evita desplazamiento visual
+            ) {
+                Text(
+                    text = if (mostrarCuadricula) "Ocultar" else "Mostrar",
+                    fontSize = 10.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
-        }) {
-            Text("↩ Volver a PachinkoView", style = MaterialTheme.typography.bodyLarge)
+
+            Button(
+                onClick = { mostrarCuadricula = !mostrarCuadricula },
+                modifier = Modifier
+                    .offset { IntOffset(x = x(1f).toInt(), y = y(20f).toInt()) }
+                    .size(width = botonAnchoDp, height = botonAltoDp),
+                contentPadding = PaddingValues(0.dp)
+            ) {
+                Text(
+                    text = if (mostrarCuadricula) "🔳" else "⬜️",
+                    fontSize = 20.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            Button(
+                onClick = {
+                    bolaPosicion = Offset(primerPin.x, primerPin.y - cellSize)
+                    bolaVelocidad = Offset(0f, 0f)
+                    simularFisica = false
+                    puedeLanzar = true
+                },
+                modifier = Modifier
+                    .offset { IntOffset(x = x(3f).toInt(), y = y(20f).toInt()) }
+                    .size(width = botonAnchoDp, height = botonAltoDp),
+                contentPadding = PaddingValues(0.dp)
+            ) {
+                Text(
+                    text = "🔘",
+                    fontSize = 20.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            Button(
+                onClick = {
+                    navController.navigate("pachinko") {
+                        popUpTo("pachinko") { inclusive = true }
+                    }
+                },
+                modifier = Modifier
+                    .offset { IntOffset(x = x(5f).toInt(), y = y(20f).toInt()) }
+                    .size(width = botonAnchoDp, height = botonAltoDp),
+                contentPadding = PaddingValues(0.dp)
+            ) {
+                Text(
+                    text = "🔙",
+                    fontSize = 20.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
     }
 }
+
+
 
 

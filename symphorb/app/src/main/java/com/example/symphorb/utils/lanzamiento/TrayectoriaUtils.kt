@@ -1,5 +1,7 @@
 package com.example.symphorb.utils.lanzamiento
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
@@ -11,6 +13,7 @@ import kotlin.math.pow
 /**
  * Simula una trayectoria balística discreta desde un punto de origen y una dirección inicial.
  */
+@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 fun simularTrayectoria(
     origen: Offset,
     direccion: Offset,
@@ -32,7 +35,6 @@ fun simularTrayectoria(
 
     var rebotes = 0
     val rebotesMaximos = 1
-    var yaRebotoEnTecho = false
 
     repeat(pasos) {
         val (nuevaPos, nuevaVel) = physicsEngine.update(
@@ -51,14 +53,6 @@ fun simularTrayectoria(
             simulacion.add(nuevaPos)
             pos = nuevaPos
             vel = nuevaVel
-            yaRebotoEnTecho = true
-            return@repeat
-        }
-
-        if (yaRebotoEnTecho) {
-            simulacion.add(nuevaPos)
-            pos = nuevaPos
-            vel = nuevaVel
             return@repeat
         }
 
@@ -67,19 +61,40 @@ fun simularTrayectoria(
         if (cambioBrusco) {
             if (++rebotes > rebotesMaximos) return simulacion
 
-            val pinCercano = pins.minByOrNull { (pos - it).getDistance() }
+            val pinCercano = pins
+                .minByOrNull { (pos - it).getDistance() }
+
             if (pinCercano != null) {
-                val dirColision = (pos - pinCercano)
-                val distancia = dirColision.getDistance()
-                if (distancia > 0.001f) {
-                    val normal = dirColision / distancia
-                    val puntoDeContacto = pinCercano + normal * (ballRadius + radioPin) * 0.7f
+                val vectorColision = nuevaPos - pinCercano
+                val distanciaActual = vectorColision.getDistance()
+                val radioTotal = ballRadius + radioPin
+
+// Si la distancia es muy pequeña, añadimos directamente el punto ajustado
+                if (distanciaActual > 0.001f) {
+                    val normal = vectorColision / distanciaActual
+                    val puntoRebote = pinCercano + (normal * radioTotal) * 0.65f
+
                     if (simulacion.isNotEmpty()) {
-                        simulacion[simulacion.size - 1] = puntoDeContacto
-                    } else {
-                        simulacion.add(puntoDeContacto)
+                        simulacion.removeLast()
                     }
-                } else {
+
+                    simulacion.add(puntoRebote)
+
+                    // Punto intermedio para suavizar la transición
+                    val puntoIntermedio = Offset(
+                        (puntoRebote.x + nuevaPos.x) / 2f,
+                        (puntoRebote.y + nuevaPos.y) / 2f
+                    )
+                    simulacion.add(puntoIntermedio)
+
+                    simulacion.add(nuevaPos)
+
+                    pos = nuevaPos
+                    vel = nuevaVel
+                    return@repeat
+                }
+
+                else {
                     simulacion.add(pos)
                 }
             } else {
