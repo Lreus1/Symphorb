@@ -13,3 +13,55 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Android Studio
+.idea/                     # Configuración específica del IDE (no necesaria para compilar)
+*.iml                      # Archivos de módulo del IDE
+
+# Archivos de compilación
+/build/                    # Build general
+**/build/                  # Build de cada módulo (incluye app/build/, etc.)
+.gradle/                   # Archivos de cache de Gradle
+/local.properties          # Contiene la ruta del SDK local
+
+# Salidas de test o profiler
+/captures/
+output.json
+output-metadata.json
+
+# Archivos temporales del sistema
+*.log
+*.tmp
+*.swp
+*.DS_Store                # MacOS
+Thumbs.db                 # Windows
+ehthumbs.db
+
+# Kotlin/Java
+*.class
+*.jar
+*.war
+*.ear
+
+# Cache de Jetpack Compose Preview
+**/.android/              # A veces contiene previews generados
+**/buildSrc/.gradle/
+
+# Archivos específicos de entorno
+.env                      # Si en algún momento usas variables de entorno locales
+*.keystore                # Nunca subas claves de firma
+
+# Versionado de dependencias (opcional, si quieres regenerarlas siempre)
+# /.gradle/
+# /app/.gradle/
+
+# Jetpack Compose metrics (opcional si los activas)
+compose-metrics/
+compose-report/
+
+# GitHub / CI
+.github/
+*.yml
+
+# Exportación a otras plataformas (si se hace en el futuro)
+export/
